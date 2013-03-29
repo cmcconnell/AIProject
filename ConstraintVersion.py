@@ -33,6 +33,8 @@ peers = dict((s, set(sum(units[s],[]))-set([s]))
 
 ################ Unit Tests ################
 
+# Left in to help explain above code 
+
 def test():
     "A set of tests that must pass."
     assert len(squares) == 81
