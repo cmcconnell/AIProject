@@ -6,6 +6,8 @@ propogation followed by depth-first search. This version is based on Peter
 Norvig's program found at http://norvig.com/sudopy.shtml
 """
 
+from time import time;
+
 ## Throughout this program we have:
 ##   r is a row,    e.g. 'A'
 ##   c is a column, e.g. '3'
@@ -193,6 +195,13 @@ def random_puzzle(N=17):
 grid1  = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
 grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
 hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
+random = random_puzzle()
+startTime = time.time()
 
-#display(grid_values(grid1))
-#display(solve(grid1))
+print "Start Time: " + str(startTime)
+display(grid_values(random))
+display(solve(random))
+endTime = time.time()
+print "End Time: " + str(endTime)
+duration = (endTime - startTime) * 1000
+print "Took: " + str(duration) + " ms"
