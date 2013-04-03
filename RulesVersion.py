@@ -70,18 +70,40 @@ def empty_squares(values):
 # for each empty square, apply the rules in order; return false if grid doesn't change
 
 def only_choice(values, empty):
+    squares_to_remove = []
     for s in empty:
         for unit in units[s]:
-            i = 0
+            unit.remove(s)  # unit contains s - don't check it
+            nonempty_squares = 0
             other_numbers = []
             for u in unit:
                 if values[u] not in '0.':
-                    i += 1
+                    nonempty_squares += 1
                     other_numbers.append(values[u])
-            if i == 8:
+            if nonempty_squares == 8:
                 v = [n for n in digits if n not in other_numbers]
-                values[s] = v
-                empty.remove(s)
+                values[s] = v[0]
+                if s not in squares_to_remove:
+                    squares_to_remove.append(s)
+    for s in squares_to_remove:
+        empty.remove(s)
+
+############# Tests for only_choice #############
+
+# one square missing (I9)
+#test_grid = "53467891267219534819834256785976142342685379171392485696153728428741963534528617."
+# column 1 missing
+#test_grid = ".34678912.72195348.98342567.59761423.26853791.13924856.61537284.87419635.45286179"
+# two squares missing, same row
+test_grid = "5346789126721953481983425678597614234268537917139248569615372842874196353452861.."
+values = grid_values(test_grid)
+empty = empty_squares(values)
+only_choice(values, empty)
+print "I8: " + values['I8']
+print "I9: " + values['I9']
+#for i in rows:
+#    square = i + '1'
+#    print values[square]
 
 ################ Display as 2-D grid ################
 
@@ -94,3 +116,5 @@ def display(values):
                       for c in cols)
         if r in 'CF': print line
     print
+
+
