@@ -20,7 +20,7 @@ class Solver:
     rows     = 'ABCDEFGHI'
     cols     = digits
     squares  = cross(rows, cols)
-    
+    pos_dic = {}    # used for saving the possibilities for the empty square
     def __init__(self,grid):
         self.unitlist = ([cross(self.rows, c) for c in self.cols] +
                     [cross(r, self.cols) for r in self.rows] +
@@ -36,7 +36,7 @@ class Solver:
         chars = [c for c in self.grid if c in self.digits or c in '0.']
         assert len(chars) == 81
         return dict(zip(self.squares, chars))
-
+    ################ display the sudoku ###########
     def display(self, values):
         "Display these values as a 2-D grid."
         width = 1+max(len(values[s]) for s in self.squares)
@@ -57,7 +57,7 @@ class Solver:
     def only_choice(self,values, square):
         s = square
         for unit in self.units[s]:
-            possibilities = ['1','2','3','4','5','6','7','8','9']
+            possibilities = [s for s in self.digits]
             for u in unit:
                 if values[u] not in '0.':
                     possibilities.remove(values[u])
@@ -67,28 +67,82 @@ class Solver:
         
     def single_possibility_rule(self,values,square):
         s = square
-        possibilities = ['1','2','3','4','5','6','7','8','9']
         for unit in self.units[s]:
             for u in unit:
-                if values[u] not in '0.' and possibilities.count(values[u]) > 0:
-                    possibilities.remove(values[u])
-        if len(possibilities) == 1:
-            values[s] = possibilities[0]
-        #print possibilities
+                if values[u] not in '0.' and self.pos_dic[s].count(values[u]) > 0:
+                    self.pos_dic[s].remove(values[u])
+        if len(self.pos_dic[s]) == 1:
+            values[s] = self.pos_dic[square][0]
+    def service(self,e):
+        if e == 1:
+            return [2,3]
+        elif e == 2:
+            return [1,3]
+        elif e == 3:
+            return [1,2]
+    def get_possible_spots(self,spot):
+        temp = []
+        temp.append([self.rows.index(spot[0]) / 3 + 1, self.digits.index(spot[1]) / 3 + 1])
+        temp.append([self.rows.index(spot[0]) % 3 + 1, self.digits.index(spot[1]) % 3 + 1])
+        
+        result = []
+        temp_result = []
+        
+        row_index = (temp[0][0] - 1) * 3 - 1
+        for j in self.service(temp[1][0]):
+            row = self.rows[row_index + j]
+            for k in self.service(temp[0][1]):
+                temp1 = []
+                for a in range(3):
+                    location = row + str((k - 1) * 3 + a + 1)
+                    temp1.append(location)
+                temp_result.append(temp1)
+        result.append([temp_result[0],temp_result[3]])
+        result.append([temp_result[1],temp_result[2]])
+        
+        temp_result = []
+        
+        col_index = (temp[0][1] - 1) * 3 - 1
+        for j in self.service(temp[1][1]):
+            col = self.digits[col_index + j]
+            for k in self.service(temp[0][0]):
+                temp1 = []
+                for a in range(3):
+                    location = self.rows[(k - 1) * 3 + a] + col
+                    temp1.append(location)
+                temp_result.append(temp1)
+        result.append([temp_result[0],temp_result[3]])
+        result.append([temp_result[1],temp_result[2]])
+        
+        return result
+        
+    def two_out_of_three_rule(self,values,square):
+#        result = self.get_possible_spots("D2")
+#        for spots in result:
+#            for squares in spots:
+#                for s in squares:
+#                    values[s] 
+        pass
+        
     def solve(self,values):
         #values = self.grid_values()
-        emptys = self.empty_squares(values)
+        empties = self.empty_squares(values)
+        for square in empties:
+            self.pos_dic[square] = [s for s in self.digits] 
+            
         #print emptys
-        while len(emptys) > 0:
-            #print len(emptys)
-            for square in emptys:
+        while len(empties) > 0:
+            print len(empties), "empty squares left"
+            for square in empties:
                 self.only_choice(values, square)
                 if values[square] in '0.':
                     self.single_possibility_rule(values, square) 
-            emptys = self.empty_squares(values)
-
+                if values[square]  in '0.':
+                    self.two_out_of_three_rule(values, square)
+            empties = self.empty_squares(values)
+        #self.two_out_of_three_rule(values, square)
 if __name__ == '__main__':
-    test_grid = ".....89126...9534..98342.678..761....2...3.9171..24...96153..8.....1963.34...61.."
+    test_grid = ".....8.126...95.4..9..42.678..761....2...3.9..1..24...96.53..8.....1963.34...61.."
     solver = Solver(test_grid)
     values = solver.grid_values()
     solver.solve(values)
