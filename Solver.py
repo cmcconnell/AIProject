@@ -56,8 +56,9 @@ class Solver:
     
     def only_choice(self,values, square):
         s = square
+        
         for unit in self.units[s]:
-            possibilities = [s for s in self.digits]
+            possibilities = [d for d in self.digits]
             for u in unit:
                 if values[u] not in '0.':
                     possibilities.remove(values[u])
@@ -67,12 +68,14 @@ class Solver:
         
     def single_possibility_rule(self,values,square):
         s = square
+        
         for unit in self.units[s]:
             for u in unit:
                 if values[u] not in '0.' and self.pos_dic[s].count(values[u]) > 0:
                     self.pos_dic[s].remove(values[u])
         if len(self.pos_dic[s]) == 1:
             values[s] = self.pos_dic[square][0]
+        
     def service(self,e):
         if e == 1:
             return [2,3]
@@ -127,13 +130,15 @@ class Solver:
     def solve(self,values):
         #values = self.grid_values()
         empties = self.empty_squares(values)
+        
         for square in empties:
             self.pos_dic[square] = [s for s in self.digits] 
-            
+        
         #print emptys
         while len(empties) > 0:
             print len(empties), "empty squares left"
             for square in empties:
+                
                 self.only_choice(values, square)
                 if values[square] in '0.':
                     self.single_possibility_rule(values, square) 
