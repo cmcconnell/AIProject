@@ -10,19 +10,26 @@ Peter Norvig's program -  http://norvig.com/sudopy.shtml
 Sudoku strategies - http://www.sudokudragon.com/sudokustrategy.htm
 """
 
-from Solver import Solver
+from Interface import *
 
-def run():
+def run_test():
     filename = 'sudoku'
     file = open(filename)
     grid = file.read().strip()
     solver = Solver(grid)
     values = solver.grid_values()
+    
     print "-----------------------------initial------------------------------"
     solver.display(values)
+    
     solver.solve(values)
+    
     print "---------------------------after solving--------------------------"
     solver.display(values)
+def run():
+    MainWindow()
+    gtk.main()
+    return 0
 if __name__ == '__main__':
     run()
 
