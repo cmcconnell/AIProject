@@ -99,9 +99,17 @@ class Solver:
                 for a in range(3):
                     location = row + str((k - 1) * 3 + a + 1)
                     temp1.append(location)
-                temp_result.append(temp1)
+                temp_result.append(temp1)    
+        adjacents = []
+        for j in self.service(temp[1][1]):
+            adjacent = (temp[0][1] - 1 ) * 3 + j - 1
+            location = spot[0] + self.digits[adjacent]
+            adjacents.append(location)
+            
+        result.append(adjacents)
         result.append([temp_result[0],temp_result[3]])
         result.append([temp_result[1],temp_result[2]])
+            
         
         temp_result = []
         
@@ -114,19 +122,51 @@ class Solver:
                     location = self.rows[(k - 1) * 3 + a] + col
                     temp1.append(location)
                 temp_result.append(temp1)
+        adjacents = []
+        for j in self.service(temp[1][0]):
+            adjacent = (temp[0][0] - 1 ) * 3 + j - 1
+            location = self.rows[adjacent] + spot[1]
+            adjacents.append(location)
+        result.append(adjacents)
         result.append([temp_result[0],temp_result[3]])
         result.append([temp_result[1],temp_result[2]])
+    
         
         return result
         
     def two_out_of_three_rule(self,values,square):
-#        result = self.get_possible_spots("D2")
-#        for spots in result:
-#            for squares in spots:
-#                for s in squares:
-#                    values[s] 
-        pass
-        
+        result = self.get_possible_spots(square)
+        adjacents = [result[0],result[3]]
+        i = 0
+        for spots in result:
+            tmp = []
+            if i != 0 and i !=3:
+                for squares in spots:
+                    t = []
+                    for s in squares:
+                        if values[s] not in '0.':
+                            t.append(values[s])
+                    tmp.append(t)
+                a = tmp[0]
+                b = tmp[1]
+                inter = list(set(a).intersection(set(b)))
+                if len(inter) == 1:
+                    flag = 1
+                    if i == 1 or i == 2:
+                        for s in adjacents[0]:
+                            if inter.count(values[s]) == 1 or values[s] in '0.':
+                                flag = 0
+                        if flag == 1:
+                            values[square] = inter[0]
+                            break
+                    elif i == 4 or i == 5:
+                        for s in adjacents[1]:
+                            if inter.count(values[s]) == 1 or values[s] in '0.':
+                                flag = 0
+                        if flag == 1:
+                            values[square] = inter[0]
+                            break      
+            i += 1 
     def solve(self,values):
         #values = self.grid_values()
         empties = self.empty_squares(values)
@@ -138,14 +178,13 @@ class Solver:
         while len(empties) > 0:
             print len(empties), "empty squares left"
             for square in empties:
-                
                 self.only_choice(values, square)
                 if values[square] in '0.':
                     self.single_possibility_rule(values, square) 
                 if values[square]  in '0.':
                     self.two_out_of_three_rule(values, square)
             empties = self.empty_squares(values)
-        #self.two_out_of_three_rule(values, square)
+        self.two_out_of_three_rule(values, "B2")
 if __name__ == '__main__':
     test_grid = ".....8.126...95.4..9..42.678..761....2...3.9..1..24...96.53..8.....1963.34...61.."
     solver = Solver(test_grid)
