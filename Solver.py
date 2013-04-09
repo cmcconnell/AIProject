@@ -154,15 +154,23 @@ class Solver:
                     flag = 1
                     if i == 1 or i == 2:
                         for s in adjacents[0]:
-                            if inter.count(values[s]) == 1 or values[s] in '0.':
-                                flag = 0
+                            if values[s] in '0.':
+                                if  self.pos_dic[s].count(inter[0]) == 1: 
+                                    flag = 0
+                            else:
+                                if  values[s] == inter[0]:
+                                    flag = 0 
                         if flag == 1:
                             values[square] = inter[0]
                             break
                     elif i == 4 or i == 5:
                         for s in adjacents[1]:
-                            if inter.count(values[s]) == 1 or values[s] in '0.':
-                                flag = 0
+                            if values[s] in '0.':
+                                if  self.pos_dic[s].count(inter[0]) == 1: 
+                                    flag = 0
+                            else:
+                                if  values[s] == inter[0]:
+                                    flag = 0 
                         if flag == 1:
                             values[square] = inter[0]
                             break      
