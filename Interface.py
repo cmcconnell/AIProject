@@ -74,14 +74,16 @@ class MainWindow:
         self.filesel.hide()
         try:
             file = open(self.entry.get_text(),"r")
-            tmp = file.readlines()
+            tmp = file.read()
             if(len(tmp) == 0):
                 print "Invalid File"
                 return
             
-            grid = tmp[0].strip()
+            grid = tmp.strip()
+            print grid
             self.solver = Solver(grid)
             self.values = self.solver.grid_values()
+            print self.values
             self.display_sudoku(self.values)
         except IOError, e:
             print "Error opening file ({0}): {1}".format(e.errno, e.strerror)
