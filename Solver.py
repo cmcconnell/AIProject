@@ -185,6 +185,7 @@ class Solver:
         #print emptys
         while len(empties) > 0:
             print len(empties), "empty squares left"
+            tmp = len(empties)
             for square in empties:
                 self.only_choice(values, square)
                 if values[square] in '0.':
@@ -192,9 +193,12 @@ class Solver:
                 if values[square]  in '0.':
                     self.two_out_of_three_rule(values, square)
             empties = self.empty_squares(values)
-        self.two_out_of_three_rule(values, "B2")
+            if tmp == len(empties):
+                print "cannot solve this puzzle"
+                return 
+#        self.two_out_of_three_rule(values, "B2")
 if __name__ == '__main__':
-    test_grid = ".....8.126...95.4..9..42.678..761....2...3.9..1..24...96.53..8.....1963.34...61.."
+    test_grid = "003020600900305001001806400008102900700000008006708200002609500800203009005010300"
     solver = Solver(test_grid)
     values = solver.grid_values()
     solver.solve(values)
