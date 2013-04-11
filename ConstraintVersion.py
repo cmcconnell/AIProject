@@ -6,7 +6,7 @@ propogation followed by depth-first search. This version is based on Peter
 Norvig's program found at http://norvig.com/sudopy.shtml
 """
 
-from time import time;
+from time import time
 
 ## Throughout this program we have:
 ##   r is a row,    e.g. 'A'
@@ -51,6 +51,28 @@ def test():
                                'A1', 'A3', 'B1', 'B3'])
     print 'All tests pass.'
 
+############### Trace #######################
+
+def write_to_trace(s, d, search=False):
+    if search == 'start':
+        trace = open("constraint_version_trace.txt", "a")
+        trace.write("Starting search\n")
+        trace.write("Puzzle solved")        
+        trace.close()
+    elif search == 'solved':
+        trace = open("constraint_version_trace.txt", "a")
+        trace.write("Puzzle solved")
+        trace.close()
+    else:
+        trace = open("constraint_version_trace.txt", "r")
+        trace_so_far = trace.readlines()
+        trace.close()
+        to_write = str(d) + " assigned to square " + str(s) + "\n"
+        if to_write not in trace_so_far:
+            trace = open("constraint_version_trace.txt", "a")
+            trace.write(to_write)
+            trace.close()
+
 ################ Parse a Grid ################
 
 def parse_grid(grid):
@@ -76,6 +98,8 @@ def assign(values, s, d):
     Return values, except return False if a contradiction is detected."""
     other_values = values[s].replace(d, '')
     if all(eliminate(values, s, d2) for d2 in other_values):
+        #write_to_trace(s, d)
+        #print "s: " + s + " values[s]: " + values[s]
         return values
     else:
         return False
@@ -102,6 +126,8 @@ def eliminate(values, s, d):
             # d can only be in one place in unit; assign it there
             if not assign(values, dplaces[0], d):
                 return False
+            else:
+                write_to_trace(dplaces[0], d)
     return values
 
 ################ Display as 2-D grid ################
@@ -125,11 +151,14 @@ def search(values):
     if values is False:
         return False ## Failed earlier
     if all(len(values[s]) == 1 for s in squares):
+        write_to_trace(False, False, 'solved')
         return values ## Solved!
     ## Chose the unfilled square s with the fewest possibilities
+    write_to_trace(False, False, 'start')
     n,s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
     return some(search(assign(values.copy(), s, d))
                 for d in values[s])
+    
 
 ################ Utilities ################
 
@@ -199,8 +228,8 @@ random = random_puzzle()
 startTime = time.time()
 
 print "Start Time: " + str(startTime)
-display(grid_values(random))
-display(solve(random))
+display(grid_values(grid1))
+display(solve(grid1))
 endTime = time.time()
 print "End Time: " + str(endTime)
 duration = (endTime - startTime) * 1000
