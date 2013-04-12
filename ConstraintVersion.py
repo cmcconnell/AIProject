@@ -191,17 +191,17 @@ def random_puzzle(N=17):
             return ''.join(values[s] if len(values[s])==1 else '.' for s in squares)
     return random_puzzle(N) ## Give up and make a new puzzle
 
+if __name__ == '__main__':
+    grid1  = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
+    grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
+    hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
+    random = random_puzzle()
+    startTime = time.time()
 
-grid1  = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
-grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
-hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
-random = random_puzzle()
-startTime = time.time()
-
-print "Start Time: " + str(startTime)
-display(grid_values(random))
-display(solve(random))
-endTime = time.time()
-print "End Time: " + str(endTime)
-duration = (endTime - startTime) * 1000
-print "Took: " + str(duration) + " ms"
+    print "Start Time: " + str(startTime)
+    display(grid_values(random))
+    display(solve(random))
+    endTime = time.time()
+    print "End Time: " + str(endTime)
+    duration = (endTime - startTime) * 1000
+    print "Took: " + str(duration) + " ms"
