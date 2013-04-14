@@ -6,7 +6,7 @@ propogation followed by depth-first search. This version is based on Peter
 Norvig's program found at http://norvig.com/sudopy.shtml
 """
 
-from time import time;
+from time import time
 
 ## Throughout this program we have:
 ##   r is a row,    e.g. 'A'
@@ -50,6 +50,28 @@ def test():
                                'C1', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9',
                                'A1', 'A3', 'B1', 'B3'])
     print 'All tests pass.'
+
+############### Trace #######################
+
+def write_to_trace(s, d, search=False):
+    if search == 'start':
+        trace = open("constraint_version_trace.txt", "a")
+        trace.write("Starting search\n")
+        trace.write("Puzzle solved")        
+        trace.close()
+    elif search == 'solved':
+        trace = open("constraint_version_trace.txt", "a")
+        trace.write("Puzzle solved")
+        trace.close()
+    else:
+        trace = open("constraint_version_trace.txt", "r")
+        trace_so_far = trace.readlines()
+        trace.close()
+        to_write = str(d) + " assigned to square " + str(s) + "\n"
+        if to_write not in trace_so_far:
+            trace = open("constraint_version_trace.txt", "a")
+            trace.write(to_write)
+            trace.close()
 
 ################ Parse a Grid ################
 
@@ -102,6 +124,8 @@ def eliminate(values, s, d):
             # d can only be in one place in unit; assign it there
             if not assign(values, dplaces[0], d):
                 return False
+            else:
+                write_to_trace(dplaces[0], d)
     return values
 
 ################ Display as 2-D grid ################
@@ -125,11 +149,14 @@ def search(values):
     if values is False:
         return False ## Failed earlier
     if all(len(values[s]) == 1 for s in squares):
+        write_to_trace(False, False, 'solved')
         return values ## Solved!
     ## Chose the unfilled square s with the fewest possibilities
+    write_to_trace(False, False, 'start')
     n,s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
     return some(search(assign(values.copy(), s, d))
                 for d in values[s])
+    
 
 ################ Utilities ################
 
@@ -191,17 +218,16 @@ def random_puzzle(N=17):
             return ''.join(values[s] if len(values[s])==1 else '.' for s in squares)
     return random_puzzle(N) ## Give up and make a new puzzle
 
-if __name__ == '__main__':
-    grid1  = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
-    grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
-    hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
-    random = random_puzzle()
-    startTime = time.time()
+grid1  = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
+grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
+hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
+random = random_puzzle()
+startTime = time.time()
 
-    print "Start Time: " + str(startTime)
-    display(grid_values(random))
-    display(solve(random))
-    endTime = time.time()
-    print "End Time: " + str(endTime)
-    duration = (endTime - startTime) * 1000
-    print "Took: " + str(duration) + " ms"
+print "Start Time: " + str(startTime)
+display(grid_values(grid1))
+display(solve(grid1))
+endTime = time.time()
+print "End Time: " + str(endTime)
+duration = (endTime - startTime) * 1000
+print "Took: " + str(duration) + " ms"
