@@ -448,7 +448,7 @@ class Solver:
         
         #print emptys
         while len(empties) > 0:
-            #print len(empties), "empty squares left"
+            print len(empties), "empty squares left"
             tmp = len(empties)
             for square in empties:
                 self.only_choice(values, square)
@@ -460,7 +460,6 @@ class Solver:
             self.naked_twin(values)
             empties = self.empty_squares(values)
             if tmp == len(empties):
-                print len(empties), "empty squares left"
                 print "cannot solve this puzzle"
                 return False
 #        self.two_out_of_three_rule(values, "B2")
