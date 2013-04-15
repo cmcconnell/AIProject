@@ -187,37 +187,61 @@ class Solver:
                             break      
             i += 1 
             
+    #Method: is_same_sg
+    #Short Desc: Given a set of squares returns true if they are in 
+    #the same sub group
+    #Param1: A list of squares - ['A1','A2']
+    #Return: True if squares in same sub group
     def is_same_sg(self,squares):
+        #If squares is empty reurn false
         if(len(squares) < 1):
             return False
+        #Handle list of size 2
         elif(len(squares) == 2):
+            #self.sub_groups contains a list of all possible subgroups. Loop through each
+            #of those and see if both squares in the list belong to the same sub group
             for sg in self.sub_groups:
                 if squares[0] in sg and squares[1] in sg:
                     return True
             return False
+        #If there are three squares
         elif(len(squares) == 3):
+            #Same as above but for three squares
             for sg in self.sub_groups:
                 if squares[0] in sg and squares[1] in sg and squares[2] in sg:
                     return True
             return False
+        #If length > 3 return false
         else:
             return False 
-        
+    
+    #Method: sg_assign
+    #Short Desc: Assign a digit to square
+    #Param1: Values {dict(square : value)}
+    #Param2: Dictionary of all possible values in each square
+    #Param3: Square. ex: 'A1'
+    #Param4: A digit. ex: '1' or '2'
+    #Return: None
     def sg_assign(self,values,pos,square,digit):
+        #If value is already between 1-9 do nothing
         if (values[square]) not in '0.':
             return
         
+        #Assign value, Set pos to '-'
         values[square] = digit
         pos[square] = ['-']
         
+        #Remove the assigned value from all peers (row, column and box)
         for sq in self.peers[square]:
             tmp = pos[sq]
             if digit in tmp:
-                #print 'Remove: ', digit, 'from ', sq
                 tmp.remove(digit)     
                 
+    #Method: generate_pos
+    #Short Desc: Generate possibility dictionary for a given grid
+    #Param1: Values {dict(square : value)}
+    #Return: Pos dictionary
     def generate_pos(self,values):
-        #generate pos from values:
         #Create an array for each square with possibility[square] = [1-9]
         pos = {}
         for square in values.keys():
@@ -227,10 +251,12 @@ class Solver:
         for square in values.keys():
             tmp = pos[square]
         
+            #If a value is assigned its pos must be set to '-'
             if values[square] not in '0.':
                 pos[square] = '-'
                 continue
-        
+            
+            #For each assigned square remove it from pos of all peers
             for i in self.peers[square]:
                 if values[i] not in '0.' and values[i] in tmp:
                     tmp.remove(values[i])
@@ -239,56 +265,44 @@ class Solver:
             
         return pos
         
+    #Method: shared_subgroups_rule
+    #Short Desc: Function implementing the shared subgroups rule. This will apply the rule on
+    #values and update any squares which could be solved
+    #Param1: Values {dict(square : value)}
+    #Return: None
     def shared_subgroups_rule(self,values):
-        #generate pos from values:
-        #Create an array for each square with possibility[square] = [1-9]
-        pos = {}
-        for square in values.keys():
-            pos[square] = [i for i in self.digits]
+        #get the pos dictionary
+        pos = self.generate_pos(values)
         
-        #Eliminate possibilities from each square based on values of peers
-        for square in values.keys():
-            tmp = pos[square]
-        
-            if values[square] not in '0.':
-                pos[square] = '-'
-                continue
-        
-            for i in self.peers[square]:
-                if values[i] not in '0.' and values[i] in tmp:
-                    tmp.remove(values[i])
-                
-            pos[square] = tmp
-        
-        #try sub-group rule here
+        #Try sub-group rule. This how it works:
+        #1. For each row/column count number of times a digit occurs in pos dictionary of each square
+        #2. If a number occurs only 2 or 3 times check if those squares are in same subgroup
+        #3. If squares are in same SG then the digit can be eliminated from all other squares in the box
         for num in range(1,19):
+            #For 1-9 (go though rows)
+            #For 10-18 (go through columns)
             if num > 9:
                 num = num -9
                 tmp_units = self.col_units[num - 1]
             else:
                 tmp_units = self.row_units[num - 1]    
-                #continue            
-            
-            if num != 8:
-                pass#continue
                 
-            #print "Col: ",tmp_units
-                
-            #go through all rows and see if any {len(pos) == 2 && both or all three in same sg)}
+            #array p is used to count the occurrence of each digit
+            #init it with 0
             p  = []
             for i in range(10):
                 p.append(0)          
         
+            #for each digit i increment p[i]
             for square in tmp_units:            
                 tmp = pos[square]
                 for i in tmp:
+                    #If tmp is '-' do nothing. 
                     if tmp != '-' and tmp != ['-']:
                         p[int(i)] = p[int(i)] + 1
                     
-            #print 'P: ',p 
-            
-            #print p
-            #print pos['A9']
+            #sg_squares will hold all squares where there are numbers that appear only 
+            #twice or thrice in the row/column
             sg_squares = []
             for i in range(10):
                 sg_squares = []
@@ -298,36 +312,50 @@ class Solver:
                         if str(i) in pos[square]:
                             sg_squares.append(square)   
                             
-                    #if squares in same sg remove i from all pos in box
+                    #if squares in same sg remove i from pos of all squares in box
                     if(self.is_same_sg(sg_squares)):
-                        #print 'Sgs: ',i,sg_squares
                         #remove i from unit in which squares are
-                        #Remove from corresponding row/column as well!
                         for unit in self.box_units:
                             if sg_squares[0] in unit:
                                 for sq in unit:
+                                    #We don't want to remove from the squares in sg_squares
                                     if sq in sg_squares:
                                         continue
+                                    
                                     tmp = pos[sq]
                                     if str(i) in tmp:
                                         tmp.remove(str(i))
                                         #print 'Remove: ',i,sq,tmp
                                 break
-            #Check for only square and single pos
-            #single pos (assign  values to all squares that have only possible value)
-            for sq in self.squares:
-                tmp = pos[sq]
-                if tmp[0] != '-'  and len(tmp) == 1:
-                    #print 'Assign: ', tmp[0], 'to', sq
-                    self.sg_assign(values, pos, sq, tmp[0])
-                    
-            #only choice
-            empties = self.empty_squares(values)
-            for sq in empties:
-                self.only_choice(values, sq)    
             
+        #Once enough possibilities are eliminated we hope this will leave us with
+        #some squares with pos[square] == 1. If so we can assign that digit to the square
+        #single pos (assign  values to all squares that have only possible value)
+        for sq in self.squares:
+            tmp = pos[sq]
+                
+            if tmp == ['-'] or tmp == '-':
+                continue
+                
+            if len(tmp) == 1:
+                #print 'Assign sg: ', tmp[0], 'to', sq
+                self.sg_assign(values, pos, sq, tmp[0])
+                    
+        #Apply the only choice rule as well
+        empties = self.empty_squares(values)
+        for sq in empties:
+            self.only_choice(values, sq)    
+    
+    #Method: get_all_subgroups
+    #Short Desc: Function generates all possible subgroups in a sudoku grid
+    #Param1: None
+    #Return: Array of all sub groups        
     def get_all_subgroups(self):
+        #Each row/col has three sub groups (one in each box)
         sub_groups = []
+        
+        #Rows will have 'ABC...I'
+        #For each alphabet in self.rows the sub group will be [A1,A2,A3],[A4,A5,A5] etc
         for i in self.rows:
             tmp = []
             for j in range(1,4):
@@ -342,6 +370,8 @@ class Solver:
                 tmp.append(i + str(j))
             sub_groups.append(tmp)
         
+        #Self.cols will have '123...9'
+        #Sub groups will be of the form [A1,B1,C1], [D1,E1,F1] etc
         for i in self.cols:
             tmp = []
             for j in ('ABC'):
@@ -357,11 +387,22 @@ class Solver:
             sub_groups.append(tmp)   
             
         return sub_groups
-        
+     
+    #Method: naked_twin
+    #Short Desc: Function that implements the naked_twin rule
+    #Param1: Values {dict(square : value)}
+    #Return: None  
     def naked_twin(self,values):
+        #Get the pos dictionary
         pos = self.generate_pos(values)
-        for num in range(1,28):
-            
+        
+        #Naked twin rule: If in any row/column there appears a paris like '23', '24' etc which
+        #appear in pos value of only two square then this means that those two numbers cannot 
+        #appear in any other squares in that unit. So we eliminate them. 
+        #Go through all squares in rows/cols and boxes and see if there are 
+        #any possible candidates for naked twin
+        #Range 1 - 9 for rows. 10-18 for columns and 19-27 for box units
+        for num in range(1,28):            
             if(num < 10):
                 tmp_unit = self.row_units[num -1]
             elif(num < 19):
@@ -372,33 +413,28 @@ class Solver:
                 tmp_unit = self.box_units[num -1]
                 
             squares = []
-                
+            #get all squares in the unit with length = 2                 
             for sq in tmp_unit:
                 if(len(pos[sq]) == 2):
                     squares.append(sq)
             
             pairs = []
+            #for each square with len(pos) = 2 see if they have common values with
+            #any other square in the unit. If they do then they are twins
             for i in range(0,len(squares)):
                 for j in range(i+1,len(squares)):
                     if pos[squares[i]] == pos[squares[j]]:
                         pairs.append([squares[i],squares[j]])
-                        
-#            if(len(pairs) > 0):
-#                 print 'Squares with len 2: ', squares
-#                 print 'Pairs: ', pairs
-#                 print 'Values: ',pos[squares[0]], pos[squares[1]]
             
             #If pair in subgroup -> eliminate in box and unit
-            #else eliminate in unit
+            #else eliminate only from unit
             for pair in pairs:
-                #If in sg, eliminate from sg
+                #If in sub group, eliminate from box
                 if(self.is_same_sg(pair)):
-                    #print 'Sgs: ',i,sg_squares
-                    #remove i from unit in which squares are
-                    #Remove from corresponding row/column as well!
+                    #remove i from box in which squares are
+                    #Remove from corresponding row/column as well
                     for unit in self.box_units:
                         if pair[0] in unit:
-                            #print 'Box unit: ', unit
                             for sq in unit:
                                 if sq in pair:
                                     continue
@@ -409,21 +445,26 @@ class Solver:
                                         tmp.remove(str(i))                                        
                             break
                     
-                #Eliminate from row/column
+                #Pairs are not in a sub group so Eliminate only from row/column
+                #First check if the pairs have row in common or a column
                 sq1 = pair[0]
                 sq2 = pair[1]
+                #If first char is same then they are in same row
                 if sq1[0] == sq2[0]:
                     row_flag = True
                     rowcol_units = self.row_units
+                #if last char is same then they are in same column
                 elif sq1[1] == sq2[1]:
                     row_flag = False
                     rowcol_units = self.col_units
+                #If nothing common then they are in same box but we have already 
+                #handled this previously
                 else:
                     continue
-                    
+                
+                #Eliminate                    
                 for unit in rowcol_units:
                     if pair[0] in unit:
-                        #print 'Row/col unit: ', unit
                         for sq in unit:
                             if sq in pair:
                                 continue
@@ -433,18 +474,23 @@ class Solver:
                                     #print 'Remove row/col: ',i,sq,tmp
                                     tmp.remove(str(i))
                         break
-            #Check for only square and single pos
-            #single pos (assign  values to all squares that have only possible value)
-            for sq in self.squares:
-                tmp = pos[sq]
-                if tmp[0] != '-'  and len(tmp) == 1:
-                    #print 'Assign: ', tmp[0], 'to', sq
-                    self.sg_assign(values, pos, sq, tmp[0])
                     
-            #only choice
-            empties = self.empty_squares(values)
-            for sq in empties:
-                self.only_choice(values, sq)
+        #As in sub group rule try to assign values to squares which have narrowed down
+        #single pos (assign  values to all squares that have only possible value)
+        for sq in self.squares:
+            tmp = pos[sq]
+                
+            if tmp == ['-'] or tmp == '-':
+                continue
+                
+            if len(tmp) == 1:
+                #print 'Assign nk: ', tmp[0], 'to', sq
+                self.sg_assign(values, pos, sq, tmp[0])
+                    
+        #only choice
+        empties = self.empty_squares(values)
+        for sq in empties:
+            self.only_choice(values, sq)
                 
     def solve(self,values):
         #values = self.grid_values()
