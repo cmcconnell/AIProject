@@ -1,7 +1,7 @@
 '''
 Created on 2013-4-3
 
-@author: Administrator
+@author: Hao Zou
 '''
 ## Throughout this program we have:
 ##   r is a row,    e.g. 'A'
@@ -57,7 +57,10 @@ class Solver:
         return [s for s in self.squares if values[s] in '0.']
     
     # for each empty square, apply the rules in order; return false if grid doesn't change
-    
+    ############################################################################################    
+    # There may be only one possible choice for a particular Sudoku square. In the simplest 
+    # case you have a group (row, column or region) that has eight squares allocated leaving 
+    # only one remaining choice available; so the remaining number must go in that empty square.
     def only_choice(self,values, square):
         s = square
         
@@ -69,7 +72,9 @@ class Solver:
             if len(possibilities) == 1:
                 values[s] = possibilities[0]
                 break
-        
+    # When you look at individual squares you will often find that there is only one possibility 
+    # left for the square. [Note: If there eight squares solved in the group then this is just the 
+    # same as the only choice rule.] 
     def single_possibility_rule(self,values,square):
         s = square
         
@@ -79,7 +84,7 @@ class Solver:
                     self.pos_dic[s].remove(values[u])
         if len(self.pos_dic[s]) == 1:
             values[s] = self.pos_dic[square][0]
-        
+    # helper function for the two_out_of_three rule
     def service(self,e):
         if e == 1:
             return [2,3]
@@ -87,6 +92,7 @@ class Solver:
             return [1,3]
         elif e == 3:
             return [1,2]
+    # helper function for the two_out_of_three rule
     def get_possible_spots(self,spot):
         temp = []
         temp.append([self.rows.index(spot[0]) / 3 + 1, self.digits.index(spot[1]) / 3 + 1])
@@ -137,7 +143,8 @@ class Solver:
     
         
         return result
-        
+    # Often you will find within a group of Sudoku squares that there is 
+    # only one place that can take a particular number.    
     def two_out_of_three_rule(self,values,square):
         result = self.get_possible_spots(square)
         adjacents = [result[0],result[3]]
