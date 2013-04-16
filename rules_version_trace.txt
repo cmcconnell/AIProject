@@ -1,0 +1,49 @@
+2 assigned to square A5 by the two out of three rule
+4 assigned to square E6 by the single possibility rule
+1 assigned to square E7 by the single possibility rule
+3 assigned to square H6 by the two out of three rule
+7 assigned to square H7 by the single possibility rule
+5 assigned to square I3 by the two out of three rule
+4 assigned to square I4 by the single possibility rule
+7 assigned to square I6 by the only choice rule
+9 assigned to square A4 by the shared subgroups rule
+7 assigned to square B3 by the shared subgroups rule
+4 assigned to square B5 by the shared subgroups rule
+8 assigned to square B7 by the shared subgroups rule
+2 assigned to square B8 by the shared subgroups rule
+7 assigned to square C5 by the shared subgroups rule
+9 assigned to square E3 by the shared subgroups rule
+5 assigned to square E4 by the shared subgroups rule
+8 assigned to square G5 by the shared subgroups rule
+4 assigned to square G9 by the shared subgroups rule
+4 assigned to square H3 by the shared subgroups rule
+6 assigned to square I1 by the shared subgroups rule
+8 assigned to square I8 by the shared subgroups rule
+2 assigned to square I9 by the shared subgroups rule
+6 assigned to square B2 by the only choice rule
+4 assigned to square A1 by the naked twins rule
+8 assigned to square A2 by the naked twins rule
+3 assigned to square C9 by the naked twins rule
+2 assigned to square E2 by the naked twins rule
+9 assigned to square F5 by the naked twins rule
+5 assigned to square F9 by the naked twins rule
+1 assigned to square G8 by the naked twins rule
+1 assigned to square H2 by the naked twins rule
+6 assigned to square H8 by the naked twins rule
+7 assigned to square A9 by the single possibility rule
+9 assigned to square B1 by the two out of three rule
+5 assigned to square C2 by the only choice rule
+9 assigned to square C8 by the only choice rule
+6 assigned to square D9 by the only choice rule
+4 assigned to square E6 by the two out of three rule
+3 assigned to square E8 by the only choice rule
+7 assigned to square E1 by the two out of three rule
+4 assigned to square F8 by the single possibility rule
+3 assigned to square G1 by the single possibility rule
+7 assigned to square G2 by the only choice rule
+5 assigned to square A8 by the shared subgroups rule
+5 assigned to square D1 by the shared subgroups rule
+3 assigned to square D5 by the shared subgroups rule
+7 assigned to square D8 by the shared subgroups rule
+3 assigned to square F2 by the shared subgroups rule
+4 assigned to square D2 by the only choice rule

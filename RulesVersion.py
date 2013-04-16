@@ -1,7 +1,12 @@
 '''
-Created on 2013-4-3
+Foundations of Artificial Intelligence, Spring 2013
 
-@author: Hao Zou
+The version of our program to solve Sudoku puzzles that applies a series
+of rules that humans would use to try to solve a puzzle. The rules are
+based on the strategies outlined at http://www.sudokudragon.com/sudokustrategy.htm
+
+The trace of the rule applications can be found in the file rules_version_trace.txt
+
 '''
 ## Throughout this program we have:
 ##   r is a row,    e.g. 'A'
@@ -14,6 +19,12 @@ Created on 2013-4-3
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     return [a+b for a in A for b in B]
+
+def write_to_trace(s, d, rule):
+    trace = open("rules_version_trace.txt", "a")
+    to_write = str(d) + " assigned to square " + str(s) + " by the " + rule + "\n"
+    trace.write(to_write)
+    trace.close()
 
 class Solver:
     digits   = '123456789'
@@ -71,7 +82,9 @@ class Solver:
                     possibilities.remove(values[u])
             if len(possibilities) == 1:
                 values[s] = possibilities[0]
+                write_to_trace(s, values[s], "only choice rule")
                 break
+            
     # When you look at individual squares you will often find that there is only one possibility 
     # left for the square. [Note: If there eight squares solved in the group then this is just the 
     # same as the only choice rule.] 
@@ -84,6 +97,8 @@ class Solver:
                     self.pos_dic[s].remove(values[u])
         if len(self.pos_dic[s]) == 1:
             values[s] = self.pos_dic[square][0]
+            write_to_trace(s, values[s], "single possibility rule")
+
     # helper function for the two_out_of_three rule
     def service(self,e):
         if e == 1:
@@ -92,6 +107,7 @@ class Solver:
             return [1,3]
         elif e == 3:
             return [1,2]
+        
     # helper function for the two_out_of_three rule
     def get_possible_spots(self,spot):
         temp = []
@@ -173,6 +189,7 @@ class Solver:
                                     flag = 0 
                         if flag == 1:
                             values[square] = inter[0]
+                            write_to_trace(s, values[s], "two out of three rule")
                             break
                     elif i == 4 or i == 5:
                         for s in adjacents[1]:
@@ -184,6 +201,7 @@ class Solver:
                                     flag = 0 
                         if flag == 1:
                             values[square] = inter[0]
+                            write_to_trace(s, values[s], "two out of three rule")
                             break      
             i += 1 
             
@@ -340,6 +358,7 @@ class Solver:
             if len(tmp) == 1:
                 #print 'Assign sg: ', tmp[0], 'to', sq
                 self.sg_assign(values, pos, sq, tmp[0])
+                write_to_trace(sq, tmp[0], "shared subgroups rule")
                     
         #Apply the only choice rule as well
         empties = self.empty_squares(values)
@@ -486,6 +505,7 @@ class Solver:
             if len(tmp) == 1:
                 #print 'Assign nk: ', tmp[0], 'to', sq
                 self.sg_assign(values, pos, sq, tmp[0])
+                write_to_trace(sq, tmp[0], "naked twins rule")
                     
         #only choice
         empties = self.empty_squares(values)
