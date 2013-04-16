@@ -4,6 +4,10 @@ Foundations of Artificial Intelligence, Spring 2013
 The version of our program to solve Sudoku puzzles that uses constraint
 propogation followed by depth-first search. This version is based on Peter
 Norvig's program found at http://norvig.com/sudopy.shtml
+
+The trace of the assignments of numbers to squares can be found in
+constraint_version_trace.txt
+
 """
 
 from time import time
@@ -54,14 +58,11 @@ def test():
 ############### Trace #######################
 
 def write_to_trace(s, d, search=False):
-    if search == 'start':
+    if search:
         trace = open("constraint_version_trace.txt", "a")
-        trace.write("Starting search\n")
+        if search == 'start':
+            trace.write("Starting search\n")
         trace.write("Puzzle solved")        
-        trace.close()
-    elif search == 'solved':
-        trace = open("constraint_version_trace.txt", "a")
-        trace.write("Puzzle solved")
         trace.close()
     else:
         trace = open("constraint_version_trace.txt", "r")
@@ -98,6 +99,8 @@ def assign(values, s, d):
     Return values, except return False if a contradiction is detected."""
     other_values = values[s].replace(d, '')
     if all(eliminate(values, s, d2) for d2 in other_values):
+        #write_to_trace(s, d)
+        #print "s: " + s + " values[s]: " + values[s]
         return values
     else:
         return False
@@ -153,6 +156,7 @@ def search(values):
         return values ## Solved!
     ## Chose the unfilled square s with the fewest possibilities
     write_to_trace(False, False, 'start')
+    write_to_trace(False, False, 'solved')
     n,s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
     return some(search(assign(values.copy(), s, d))
                 for d in values[s])
