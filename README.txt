@@ -3,5 +3,6 @@ This is the ReadMe for the AI Project
 Team: Sudoku Terminators
 Project: Solving Sudoku
 
-How to run: Fill this in later
-vishwa: testing git
+Must be run on a linux system for UI to work correctly.
+
+Use with Python 2.7
