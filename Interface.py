@@ -69,7 +69,7 @@ class MainWindow:
             return
         
         if ret != 'EINVAL':
-            self.status_label.set_text("Took: " + str(duration) + " ms")        
+            self.status_label.set_text("Time: " + str(duration) + " ms")        
         
         
     def reset_callback(self, widget, data=None):
