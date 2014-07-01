@@ -19,3 +19,4 @@ Other puzzles can be imported to use in testing. Test puzzles should be in .txt 
 81 integers, using 0s or .s for spaces that need to be solved. The program only reads the numbers 0-9 and . 
 for the puzzle values, so they can be spaced to be human readable using any other characters.
 New line added
+new
